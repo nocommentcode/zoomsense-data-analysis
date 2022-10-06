@@ -62,5 +62,24 @@ def get_start_end_time(teams):
     return start, end
 
 
+def calculate_participation_score(teams, filename=None):
+    team_scores = {}
+    for i, team in enumerate(teams):
+        members, team_member_counts = np.unique(team[:, 1], return_counts=True, axis=0)
+        min = team_member_counts.min()
+        sum = team_member_counts.sum()
+        team_scores[f"Team {i}"] = 1
+        for count in team_member_counts:
+            team_scores[f"Team {i}"] -= (count - min) / sum
+
+    if filename is None:
+        print("Participation Scores: ")
+        for team in team_scores:
+            print(f"{team}: {team_scores[team]}")
+    else:
+        with open(filename, 'w') as f:
+            f.write(json.dumps(team_scores))
+
+
 def to_minutes_since_start(start_timestamp, timestamp):
     return (timestamp - start_timestamp) / (1000 * 60)

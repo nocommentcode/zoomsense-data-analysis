@@ -6,7 +6,7 @@ from utils import get_start_end_time, to_minutes_since_start
 colours = ["b", "g", "r", "c"]
 
 
-def plot_count_over_time(teams, title):
+def plot_count_over_time(teams, title, save_filename=None):
     start_time, end_time = get_start_end_time(teams)
     end_time = to_minutes_since_start(start_time, end_time)
 
@@ -20,10 +20,15 @@ def plot_count_over_time(teams, title):
     plt.xlabel("time (min)")
     plt.ylabel("count")
     plt.legend()
-    plt.show()
+
+    if save_filename is None:
+        plt.show()
+    else:
+        plt.savefig(save_filename)
+    plt.close()
 
 
-def plot_counts_by_team_and_member(teams, title):
+def plot_counts_by_team_and_member(teams, title, save_filename=None):
     member_counts = {}
     for team_no, team in enumerate(teams):
         members, team_member_counts = np.unique(team[:, 1], return_counts=True, axis=0)
@@ -53,10 +58,15 @@ def plot_counts_by_team_and_member(teams, title):
 
     fig.tight_layout()
 
-    plt.show()
+    if save_filename is None:
+        plt.show()
+    else:
+        plt.savefig(save_filename)
+    plt.close()
 
 
-def plot_counts_by_question_type(teams, title, question_time_bins, category_names, question_type_names):
+def plot_counts_by_question_type(teams, title, question_time_bins, category_names, question_type_names,
+                                 save_filename=None):
     activity = []
 
     for category in question_time_bins:
@@ -67,7 +77,7 @@ def plot_counts_by_question_type(teams, title, question_time_bins, category_name
             for start, end in category:
                 chats = team[np.logical_and(start < team[:, 0], team[:, 0] < end), :]
                 duration = to_minutes_since_start(start, end)
-                category_counts[i].append(round(len(chats)/duration, 2))
+                category_counts[i].append(round(len(chats) / duration, 2))
         activity.append(category_counts)
 
     fig, ax = plt.subplots(2, len(activity) // 2)
@@ -91,7 +101,12 @@ def plot_counts_by_question_type(teams, title, question_time_bins, category_name
 
         # _ = [ax[ax_x, ax_y].bar_label(bar, padding=3) for bar in bars]
 
-    fig.tight_layout()
     fig.suptitle(title)
-    plt.show()
 
+
+    if save_filename is None:
+        plt.show()
+    else:
+        plt.savefig(save_filename)
+
+    plt.close()
